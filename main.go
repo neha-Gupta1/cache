@@ -1,8 +1,8 @@
 package main
 
 import (
-	"cache/controller"
-	"cache/model"
+	"github.com/cache/controller"
+	"github.com/cache/model"
 )
 
 func main() {

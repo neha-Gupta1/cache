@@ -1,10 +1,10 @@
 package controller
 
 import (
-	"cache/model"
 	"log"
 	"net/http"
 
+	"github.com/cache/model"
 	"github.com/gorilla/mux"
 )
 
