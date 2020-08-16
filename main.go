@@ -5,7 +5,8 @@ import (
 	"github.com/cache/model"
 )
 
+var server model.Server
+
 func main() {
-	model.DBSetup()
 	controller.Mycontroller()
 }

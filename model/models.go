@@ -1,48 +1,50 @@
 package model
 
 import (
-	"context"
 	"fmt"
 	"log"
-	"time"
 
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
+	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
 
 // Node single element of linklist
 type Node struct {
 	// mux   sync.mutex
-	Value      string
-	ID         int
-	Next       *Node
-	ExpiryTime time.Time
+	Value string
+	ID    int
+	Next  *Node
 }
 
 // Data found from db
 type Data struct {
-	ID    int
-	Value string
+	ID    int    `json:"id" gorm:"primary_key;auto_increment"`
+	Value string `json:"value"`
 }
 
-const url = "mongodb://localhost:27017/test"
+//Server struct
+type Server struct {
+	DBServer *gorm.DB
+}
 
-// DBSetup ...
-func DBSetup() (*mongo.Client, error) {
-	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
-	client, err := mongo.Connect(context.TODO(), clientOptions)
+// Initialize will intialize DB
+func (Server *Server) Initialize(Dbdriver, DbUser, DbPassword, DbPort, DbHost, DbName string) {
 
+	var err error
+	log.Println("******Database value: cache-mysql: *****", DbHost)
+	DBURL := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local", DbUser, DbPassword, DbHost, DbPort, DbName)
+	Server.DBServer, err = gorm.Open(Dbdriver, DBURL)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Printf("Cannot connect to %s database", Dbdriver)
+		log.Fatal("This is the error:", err)
+	} else {
+		fmt.Printf("We are connected to the %s database", Dbdriver)
 	}
 
-	err = client.Ping(context.TODO(), nil)
+	Server.DBServer.Debug().AutoMigrate(&Data{}) //database migration
+}
 
-	if err != nil {
-		log.Fatal(err)
-		return client, err
-	}
-
-	fmt.Println("Connected to MongoDB!")
-	return client, err
+// Server getter
+func (Server *Server) Server() *gorm.DB {
+	return Server.DBServer
 }
