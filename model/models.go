@@ -31,7 +31,6 @@ type Server struct {
 func (Server *Server) Initialize(Dbdriver, DbUser, DbPassword, DbPort, DbHost, DbName string) {
 
 	var err error
-	log.Println("******Database value: cache-mysql: *****", DbHost)
 	DBURL := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local", DbUser, DbPassword, DbHost, DbPort, DbName)
 	Server.DBServer, err = gorm.Open(Dbdriver, DBURL)
 	if err != nil {
@@ -41,7 +40,7 @@ func (Server *Server) Initialize(Dbdriver, DbUser, DbPassword, DbPort, DbHost, D
 		fmt.Printf("We are connected to the %s database", Dbdriver)
 	}
 
-	Server.DBServer.Debug().AutoMigrate(&Data{}) //database migration
+	Server.DBServer.Debug().AutoMigrate(&Data{})
 }
 
 // Server getter

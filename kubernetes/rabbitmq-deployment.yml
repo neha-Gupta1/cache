@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment                            # Type of the kubernetes resource
+metadata:
+  name: cache-rabbitmq                     
+  labels:                                  
+    app: cache-rabbitmq
+spec:
+  selector:
+    matchLabels:                          
+      app: cache-rabbitmq
+      tier: rabbitmq
+  strategy:
+    type: Recreate 
+  replicas: 1
+  template:                                 
+    metadata: 
+      labels:                               
+        app: cache-rabbitmq
+        tier: rabbitmq
+    spec:                                 
+      containers:
+        - image: rabbitmq:3-management              
+          name: rabbitmq
+          imagePullPolicy: "IfNotPresent"   
+          envFrom:                                
+          - secretRef:                           
+              name: mysql-secret
+          ports:
+          - containerPort: 5672             
+            name: rabbitmq
+

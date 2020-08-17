@@ -1,0 +1,13 @@
+apiVersion: v1                          
+kind: Service                            
+metadata:
+  name: cache-rabbitmq                
+  labels:                               
+    app: cache-rabbitmq
+spec:
+  type: NodePort
+  ports:
+    - port: 5672
+  selector:                             
+    app: cache-rabbitmq
+    tier: rabbitmq 

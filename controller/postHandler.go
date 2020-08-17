@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"bytes"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -18,9 +19,8 @@ func postcacheHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "unable to decode", http.StatusBadRequest)
 		return
 	}
-	id := knowRow(data.ID)
 
-	result, present, err := insertInCache(id, data)
+	result, present, err := insertInCache(data)
 	if present {
 		http.Error(w, "already in cache", http.StatusConflict)
 		return
@@ -31,55 +31,59 @@ func postcacheHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(result)
-	w.WriteHeader(http.StatusOK)
 
 }
 
-func insertInCache(bucketID int, data model.Data) (result model.Data, alreadyPresent bool, err error) {
-	log.Println("insert into cache. Will find in bucketID:", bucketID, "id:", data.ID)
-	head := bucket.bucket[bucketID]
-	defer func() {
-		bucket.bucket[bucketID] = head
-	}()
+func insertInCache(data model.Data) (result model.Data, present bool, err error) {
 
-	if bucket.bucket[bucketID] == nil {
-		bucket.bucket[bucketID] = &model.Node{Value: data.Value, ID: data.ID}
-		result = model.Data{ID: data.ID, Value: data.Value}
-		head = bucket.bucket[bucketID]
-		err = server.DBServer.Model("data").Create(&data).Error
-		if err != nil {
-			log.Println("found err: ", err, "while inserting into db. Data: [", data, "]")
-			return result, false, err
-		}
-
-		log.Println("found result: ", result.ID)
-		return result, false, nil
+	if _, ok := bucket[data.ID]; ok {
+		return data, true, nil
 	}
+	bucket[data.ID] = data.Value
+	err = insertIntoDB(data)
 
-	if data.ID == bucket.bucket[bucketID].ID {
-		result = model.Data{ID: data.ID, Value: data.Value}
-		log.Println("found result: ", result.ID)
-		return result, true, nil
-	}
+	return data, false, nil
+}
 
-	for bucket.bucket[bucketID].Next != nil {
-		if data.ID == bucket.bucket[bucketID].ID {
-			result = model.Data{ID: data.ID, Value: data.Value}
-			log.Println("found result: ", result.ID)
-			return result, true, nil
-		}
-		bucket.bucket[bucketID] = bucket.bucket[bucketID].Next
-	}
-
-	err = server.DBServer.Model("data").Create(&data).Error
+// GetFromDB gets existing data from db
+func GetFromDB() error {
+	var data []model.Data
+	err := server.DBServer.Model("data").Find(&data).Error
 	if err != nil {
-		log.Println("found err: ", err, "while inserting into db. Data: [", data, "]")
-		return result, false, err
+		log.Println("found err: ", err, "while  getting from db.")
+		return err
 	}
+	for i := range data {
+		err := insertIntoqueue(data[i])
+		if err != nil {
+			log.Println("found err: ", err, "while  inserting into queue.")
+			return err
+		}
+	}
+	return nil
+}
+func insertIntoDB(msg model.Data) (err error) {
+	err = server.DBServer.Model("data").Create(&msg).Error
+	if err != nil {
+		log.Println("found err: ", err, "while inserting into db. Data: [", msg, "]")
+		return err
+	}
+	return nil
+}
 
-	result = model.Data{Value: data.Value, ID: data.ID}
-	next := model.Node{Value: data.Value, ID: data.ID}
-	bucket.bucket[bucketID].Next = &next
-	log.Println(bucket.bucket)
-	return result, false, nil
+func insertIntoqueue(data model.Data) (err error) {
+
+	var buffer bytes.Buffer
+	enc := json.NewEncoder(&buffer)
+	err = enc.Encode(data)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	err = conn.Publish("key", buffer.Bytes())
+	if err != nil {
+		log.Println("unable to connect to mq. Err: ", err)
+		return
+	}
+	return nil
 }

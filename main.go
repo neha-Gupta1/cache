@@ -8,5 +8,8 @@ import (
 var server model.Server
 
 func main() {
-	controller.Mycontroller()
+	controller.InitializeApp()
+	go controller.Mycontroller()
+	controller.RunConsumer()
+	controller.GetFromDB()
 }

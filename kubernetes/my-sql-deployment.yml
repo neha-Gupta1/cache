@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment                          
+  name: cache-mysql                     
+  labels:                                   
+    app: cache-mysql
+spec:
+  selector:
+    matchLabels:                            
+      app: cache-mysql
+      tier: mysql
+  strategy:
+    type: Recreate 
+  replicas: 1
+  template:                                
+    metadata: 
+      labels:                              
+        app: cache-mysql
+        tier: mysql
+    spec:                                  
+      containers:
+        - image: neha16/mysql-cache:1.0.0                  
+          name: mysql
+          imagePullPolicy: IfNotPresent 
+          envFrom:                                
+          - secretRef:                           
+              name: mysql-secret
+          ports:
+          - containerPort: 3306            
+            name: mysql
+          volumeMounts:
+            - mountPath: /var/lib/mysql
+              name: mysql-persistent-storage 
+      volumes:                          
+      - name: mysql-persistent-storage 
+        persistentVolumeClaim:
+          claimName: mysql-pv-claim
+
