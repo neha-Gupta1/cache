@@ -78,10 +78,11 @@ func getAllRow(limit, offset int) (result map[int]string) {
 	}
 	count := 0
 	for i := range bucket {
-		if count >= offset && count <= end {
+		if count >= offset && count < end {
 			result[i] = bucket[i]
+			log.Println("log value: ", result[i])
 		}
-		if i > end {
+		if count > end {
 			break
 		}
 		count++
