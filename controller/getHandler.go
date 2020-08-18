@@ -42,6 +42,34 @@ func getAllcacheHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// swagger:operation GET /cache Cache ListCache
+//
+// List all data in cache
+//
+// List cache record
+//
+// ---
+// produces:
+// - application/json
+// parameters:
+// - name: offset
+//   in: query
+//   description: Offset to start returning items from
+//   required: false
+//   type: integer
+// - name: limit
+//   in: query
+//   description: Maximum number of items to return
+//   required: false
+//   type: integer
+// responses:
+//   '200':
+//     description: Success, updated account
+//     schema:
+//       "$ref": "#/definitions/Data"
+//   '400':
+//     description: invalid data provided
+
 func getAllRow(limit, offset int) (result map[int]string) {
 	result = make(map[int]string, limit)
 	for i := range bucket {

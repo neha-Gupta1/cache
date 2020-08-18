@@ -9,7 +9,7 @@ var server model.Server
 
 func main() {
 	controller.InitializeApp()
-	go controller.Mycontroller()
-	controller.RunConsumer()
-	controller.GetFromDB()
+	go controller.GetFromDB()
+	controller.Mycontroller()
+
 }

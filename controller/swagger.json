@@ -1,0 +1,59 @@
+{
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "swagger": "2.0",
+  "info": {
+    "description": "The purpose of this application is to get and store cache information",
+    "title": "cache APIs",
+    "contact": {
+      "name": "Neha Gupta",
+      "email": "nehagupta161995@gmail.com"
+    },
+    "version": "1.0.0"
+  },
+  "basePath": "/",
+  "paths": {
+    "/cache": {
+      "get": {
+        "description": "List cache record",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Cache"
+        ],
+        "summary": "List all data in cache",
+        "operationId": "ListCache",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "Offset to start returning items from",
+            "name": "offset",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "Maximum number of items to return",
+            "name": "limit",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success, updated account",
+            "schema": {
+              "$ref": "#/definitions/Data"
+            }
+          },
+          "400": {
+            "description": "invalid data provided"
+          }
+        }
+      }
+    }
+  }
+}

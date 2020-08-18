@@ -1,13 +1,39 @@
 package controller
 
 import (
-	"bytes"
 	"encoding/json"
 	"log"
 	"net/http"
 
 	"github.com/cache/model"
 )
+
+// swagger:operation POST /cache Cache createCache
+//
+// Create Cache
+//
+// Create Cache
+// ---
+// produces:
+// - application/json
+// parameters:
+// - name: cache data
+//   in: body
+//   description: value to be stored in cache
+//   required: true
+//   schema:
+//     "$ref": "#/definitions/Data"
+// responses:
+//   '200':
+//     description: Success, added to cache
+//     schema:
+//       "$ref": "#/definitions/Data"
+//   '400':
+//     description: Bad Request
+//   '409':
+//     description: Conflict already present in db
+//   '500':
+//     description: Internal Server Error, Something bad happened
 
 func postcacheHandler(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
@@ -34,8 +60,18 @@ func postcacheHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func insertInCache(data model.Data) (result model.Data, present bool, err error) {
+func insertInCacheFromDB(data model.Data) (result model.Data, present bool, err error) {
+	log.Println("Inserting into cache:", data)
+	if _, ok := bucket[data.ID]; ok {
+		return data, true, nil
+	}
+	bucket[data.ID] = data.Value
 
+	return data, false, nil
+}
+
+func insertInCache(data model.Data) (result model.Data, present bool, err error) {
+	log.Println("Inserting into cache:", data)
 	if _, ok := bucket[data.ID]; ok {
 		return data, true, nil
 	}
@@ -45,45 +81,11 @@ func insertInCache(data model.Data) (result model.Data, present bool, err error)
 	return data, false, nil
 }
 
-// GetFromDB gets existing data from db
-func GetFromDB() error {
-	var data []model.Data
-	err := server.DBServer.Model("data").Find(&data).Error
-	if err != nil {
-		log.Println("found err: ", err, "while  getting from db.")
-		return err
-	}
-	for i := range data {
-		err := insertIntoqueue(data[i])
-		if err != nil {
-			log.Println("found err: ", err, "while  inserting into queue.")
-			return err
-		}
-	}
-	return nil
-}
 func insertIntoDB(msg model.Data) (err error) {
 	err = server.DBServer.Model("data").Create(&msg).Error
 	if err != nil {
 		log.Println("found err: ", err, "while inserting into db. Data: [", msg, "]")
 		return err
-	}
-	return nil
-}
-
-func insertIntoqueue(data model.Data) (err error) {
-
-	var buffer bytes.Buffer
-	enc := json.NewEncoder(&buffer)
-	err = enc.Encode(data)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	err = conn.Publish("key", buffer.Bytes())
-	if err != nil {
-		log.Println("unable to connect to mq. Err: ", err)
-		return
 	}
 	return nil
 }

@@ -17,7 +17,7 @@ spec:
       containers:
       - name: cache-app 
         image: neha16/cache:1.0.3                  
-        imagePullPolicy: Always                         
+        imagePullPolicy: Always  #IfNotPresent  #Always                         
         ports:
           - name: http
             containerPort: 8080                              

@@ -36,7 +36,6 @@ func InitializeApp() {
 		log.Println("Error found:", err)
 	}
 	server.Initialize(os.Getenv("DB_DRIVER"), os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_PORT"), os.Getenv("DB_HOST"), os.Getenv("DB_NAME"))
-
 }
 
 func initializeBucket() {
@@ -55,15 +54,39 @@ func initalizeQueue() (err error) {
 	if err == nil {
 		log.Println("Inialization successfull")
 	}
+
+	// We create an exahange that will bind to the queue to send and receive messages
+	err = ch.ExchangeDeclare("events", "topic", true, false, false, false, nil)
+
+	if err != nil {
+		log.Println("Error in initalization queue: ", err)
+		return err
+	}
 	return err
 
 }
 
-// RunConsumer strart another thread
-func RunConsumer() {
-	err := conn.StartConsumer("add", "key")
+// GetFromDB gets existing data from db
+func GetFromDB() error {
+	log.Println("Func called: GetFromDB")
+	var data []model.Data
+	err := server.DBServer.Model("data").Find(&data).Error
+	if err != nil {
+		log.Println("found err: ", err, "while  getting from db.")
+		return err
+	}
+	for i := range data {
+		err := insertIntoqueue(data[i])
+		if err != nil {
+			log.Println("found err: ", err, "while  inserting into queue.")
+			return err
+		}
+	}
+
+	err = conn.StartConsumer("add", "key")
 	if err != nil {
 		log.Println("err while connecting: ", err)
-		return
+		return err
 	}
+	return nil
 }

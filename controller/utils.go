@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"bytes"
 	"encoding/json"
 	"log"
 
@@ -26,11 +27,12 @@ func (conn Conn) StartConsumer(queueName, routingKey string) error {
 	}
 
 	// bind the queue to the routing key
-	// err = conn.Channel.QueueBind(queueName, routingKey, "events", false, nil)
-	// if err != nil {
-	// 	log.Println("Error while declaring queue:", err)
-	// 	return err
-	// }
+	err = conn.Channel.QueueBind(queueName, routingKey, "events", false, nil)
+	log.Println("binding to queue")
+	if err != nil {
+		log.Println("Error while declaring queue:", err)
+		return err
+	}
 
 	err = conn.Channel.Qos(1, 0, false)
 	if err != nil {
@@ -40,23 +42,23 @@ func (conn Conn) StartConsumer(queueName, routingKey string) error {
 
 	msgs, err := conn.Channel.Consume(queueName, "", false, false, false, false, nil)
 	if err != nil {
+		log.Println("Error while consume: ", err)
 		return err
 	}
 	stopChan := make(chan bool)
 	go func() {
 		var data model.Data
 		for msg := range msgs {
-
 			err := json.Unmarshal(msg.Body, &data)
-
+			log.Println("Msg recieved:", msg.Body)
 			if err != nil {
 				log.Printf("Error decoding JSON: %s", err)
 			}
-			_, _, err = insertInCache(data)
+			_, _, err = insertInCacheFromDB(data)
 			if err != nil {
 				log.Println("Got err: ", err)
 			}
-
+			log.Println("Msg recieved: body: ", data)
 			if err := msg.Ack(false); err != nil {
 				log.Printf("Error acknowledging message : %s", err)
 			} else {
@@ -68,11 +70,20 @@ func (conn Conn) StartConsumer(queueName, routingKey string) error {
 	return nil
 }
 
-func insertIntoDB(msg model.Data) (err error) {
-	err = server.DBServer.Model("data").Create(&msg).Error
+func insertIntoqueue(data model.Data) (err error) {
+	log.Println("Func called: insertIntoqueue: ", data)
+	var buffer bytes.Buffer
+	enc := json.NewEncoder(&buffer)
+	err = enc.Encode(data)
 	if err != nil {
-		log.Println("found err: ", err, "while inserting into db. Data: [", msg, "]")
-		return err
+		log.Println(err)
+		return
+	}
+
+	err = conn.Publish("key", buffer.Bytes())
+	if err != nil {
+		log.Println("unable to connect to mq. Err: ", err)
+		return
 	}
 	return nil
 }
