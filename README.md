@@ -23,3 +23,7 @@ kubectl apply -f kubernetes/rabbitmq-service.yml
 kubectl apply -f cache-app.yml
 kubectl apply -f cache-app-service.yml
 
+Since we are running it on minikube we can get the app url as- 
+ minikube service cache-app --url
+ 
+
