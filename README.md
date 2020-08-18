@@ -7,6 +7,7 @@ Cache is the microservice deployed on kubernetes. It stores data in memory and h
 API exposed -
 - GET - /cache
 - POST - /cache
+- GET - /swagger 
 ---------------------------------------------
 
 Steps to run it locally - 
@@ -24,6 +25,7 @@ kubectl apply -f cache-app.yml
 kubectl apply -f cache-app-service.yml
 
 Since we are running it on minikube we can get the app url as- 
- minikube service cache-app --url
+ minikube service cache-app --url 
+ We can use above url to get the results from APIs.
  
 
