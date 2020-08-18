@@ -18,7 +18,7 @@ func getAllcacheHandler(w http.ResponseWriter, r *http.Request) {
 		limit = 100
 	} else {
 		limit, err = convertToInt(limitString)
-		if err != nil && limit < 1 {
+		if err != nil {
 			log.Println("Invalid limit: ", err)
 			http.Error(w, "invalid limit. Should be positive integer", http.StatusBadRequest)
 			return
@@ -66,23 +66,27 @@ func getAllcacheHandler(w http.ResponseWriter, r *http.Request) {
 //   '200':
 //     description: Success, updated account
 //     schema:
-//       "$ref": "#/definitions/Data"
+//       "$ref": "#/definitions/model/Data"
 //   '400':
 //     description: invalid data provided
 
 func getAllRow(limit, offset int) (result map[int]string) {
-	result = make(map[int]string, limit)
-	for i := range bucket {
-		if offset > 0 {
-			offset = offset - 1
-			continue
-		}
-		if limit > 0 {
-			result[i] = bucket[i]
-			limit = limit - 1
-		}
+	result = make(map[int]string)
+	end := limit + offset
+	if offset > len(bucket) {
+		return nil
 	}
-	log.Println("Sending response: ", result)
+	count := 0
+	for i := range bucket {
+		if count >= offset && count <= end {
+			result[i] = bucket[i]
+		}
+		if i > end {
+			break
+		}
+		count++
+	}
+
 	return result
 }
 

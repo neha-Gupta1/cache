@@ -50,28 +50,32 @@ func Mycontroller() {
 }
 
 func getswagger(w http.ResponseWriter, r *http.Request) {
-	jsonFile, err := os.Open("swagger.json")
-
-	defer func() {
-		log.Println("unable to fetch swagger")
-	}()
+	jsonFile, err := os.Open("./swagger.json")
+	if err != nil {
+		log.Println("unable to find file")
+		http.Error(w, "unable to read file", http.StatusNotFound)
+	}
 	byteValue, err := ioutil.ReadAll(jsonFile)
-	if err == nil {
-		var result map[string]interface{}
-		err = json.Unmarshal([]byte(byteValue), &result)
-		if err != nil {
-			http.Error(w, "unable to unmarsahll", http.StatusInternalServerError)
-			return
-		}
-		if err == nil {
-			if x, ok := result["basePath"]; ok {
-				if origPath, ook := x.(string); ook {
-					result["basePath"] = origPath
-				}
-			}
-			json.NewEncoder(w).Encode(result)
-		}
+	if err != nil {
+		log.Println("could not read file")
+		http.Error(w, "unable to read file", http.StatusInternalServerError)
 	}
 
-	log.Println("could not read file")
+	var result map[string]interface{}
+	err = json.Unmarshal([]byte(byteValue), &result)
+	if err != nil {
+		http.Error(w, "unable to unmarsahll", http.StatusInternalServerError)
+		return
+	}
+
+	if x, ok := result["basePath"]; ok {
+		if origPath, ook := x.(string); ook {
+			result["basePath"] = origPath
+		}
+	} else {
+		http.Error(w, "unable to get base path", http.StatusInternalServerError)
+		return
+	}
+	json.NewEncoder(w).Encode(result)
+
 }

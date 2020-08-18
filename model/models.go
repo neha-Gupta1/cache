@@ -17,6 +17,7 @@ type Node struct {
 }
 
 // Data found from db
+// swagger:model
 type Data struct {
 	ID    int    `json:"id" gorm:"primary_key;auto_increment"`
 	Value string `json:"value"`

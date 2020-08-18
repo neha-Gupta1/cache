@@ -16,6 +16,8 @@ WORKDIR /app
 # Copy go mod and sum files 
 COPY go.mod go.sum ./
 
+COPY ./controller/swagger.json ./
+
 # Download all dependencies. Dependencies will be cached if the go.mod and the go.sum files are not changed 
 RUN go mod download 
 
@@ -33,7 +35,8 @@ WORKDIR /root/
 
 # Copy the Pre-built binary file from the previous stage. Observe we also copied the .env file
 COPY --from=builder /app/main .
-COPY --from=builder /app/.env .       
+COPY --from=builder /app/.env .   
+COPY --from=builder /app/swagger.json .    
 
 # Expose port 8080 to the outside world
 EXPOSE 8080

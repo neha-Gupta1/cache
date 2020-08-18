@@ -4,7 +4,7 @@ go 1.13
 
 require (
 	github.com/IBM-Cloud/bluemix-go v0.0.0-20200724061452-7e266e248891
-	github.com/asaskevich/govalidator v0.0.0-20200817114649-df4adffc9d8c // indirect
+	github.com/asaskevich/govalidator v0.0.0-20200818142706-50839af6027e // indirect
 	github.com/go-openapi/spec v0.19.9 // indirect
 	github.com/go-swagger/go-swagger v0.25.0 // indirect
 	github.com/gorilla/mux v1.7.4

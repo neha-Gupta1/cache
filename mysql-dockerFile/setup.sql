@@ -1,5 +1,0 @@
-CREATE DATABASE cachedb;
-
-USE cachedb;
-
-CREATE TABLE cache (id INTEGER(20) AUTO_INCREMENT, string VARCHAR(20),PRIMARY KEY(id));

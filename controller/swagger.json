@@ -46,11 +46,50 @@
           "200": {
             "description": "Success, updated account",
             "schema": {
-              "$ref": "#/definitions/Data"
+              "$ref": "#/definitions/model/Data"
             }
           },
           "400": {
             "description": "invalid data provided"
+          }
+        }
+      },
+      "post": {
+        "description": "Save data in memory",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Cache"
+        ],
+        "summary": "Create Cache",
+        "operationId": "createCache",
+        "parameters": [
+          {
+            "description": "value to be stored in cache",
+            "name": "cache data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Data"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success, added to cache",
+            "schema": {
+              "$ref": "#/definitions/Data"
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "409": {
+            "description": "Conflict already present in db"
+          },
+          "500": {
+            "description": "Internal Server Error, Something bad happened"
           }
         }
       }

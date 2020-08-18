@@ -12,7 +12,8 @@ import (
 //
 // Create Cache
 //
-// Create Cache
+// Save data in memory
+//
 // ---
 // produces:
 // - application/json
@@ -88,4 +89,10 @@ func insertIntoDB(msg model.Data) (err error) {
 		return err
 	}
 	return nil
+}
+
+//Data for swagger
+type Data struct {
+	ID    int    `json:"id" gorm:"primary_key;auto_increment"`
+	Value string `json:"value"`
 }
