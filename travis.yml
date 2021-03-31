@@ -1,0 +1,16 @@
+language: go
+go: 
+ - 1.15.x
+
+install:
+  - go get -t ./... || true
+
+script:
+ - go test -v ./...
+ - curl -X "PUT" "http://341434f54337.ngrok.io/api/v1/bom" \
+     -H 'Content-Type: application/json' \
+     -H 'X-API-Key: smbJt0FTNzDTxB8jKXWeJODniwZAHE6w' \
+     -d $'{
+      "project": "40ea1786-dd41-4840-8d8c-55278ae81deb",
+      "bom": @payload.json
+      }'
