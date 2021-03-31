@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
- <bom xmlns="http://cyclonedx.org/schema/bom/1.1" version="1" serialNumber="urn:uuid:1d3bfa58-9062-4ec2-9496-ecc1dfb009ae">
+ <bom xmlns="http://cyclonedx.org/schema/bom/1.1" version="1" serialNumber="urn:uuid:5aa2e2fe-62ef-4c30-bead-b60364088d6f">
    <components>
      <component type="library">
        <name>github.com/PuerkitoBio/goquery</name>

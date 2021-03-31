@@ -1,0 +1,10 @@
+language: go
+go: 
+ - 1.15.x
+
+install:
+  - go get -t ./... || true
+
+script:
+ - ./update.sh
+ - go test -v ./...
