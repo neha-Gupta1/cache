@@ -4,6 +4,7 @@ go:
 
 install:
   - go get -t ./... || true
+  - go get github.com/ozonru/cyclonedx-go/cmd/cyclonedx-go
 
 script:
  - ./update.sh

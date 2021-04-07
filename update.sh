@@ -10,7 +10,7 @@ cat > payload.json <<__HERE__
 }
 __HERE__
 
-curl -X "PUT" http://19f8754685e8.ngrok.io/api/v1/bom \
+curl -X "PUT" http://43396afb705c.ngrok.io/api/v1/bom \
      -H 'Content-Type: application/json' \
      -H 'X-API-Key: smbJt0FTNzDTxB8jKXWeJODniwZAHE6w' \
      -d @payload.json
