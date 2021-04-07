@@ -4,8 +4,8 @@ cyclonedx-go -o bom.xml
 
 cat > payload.json <<__HERE__
 {
-  "projectName":"test1",
-  "projectVersion":"1.1" ,
+  "projectName":"cache- golang",
+  "projectVersion":"v1" ,
   "bom": "$(cat bom.xml |base64 -)"
 }
 __HERE__
