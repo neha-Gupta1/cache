@@ -1,0 +1,7 @@
+
+github.com/go-sql-driver/mysql,v1.5.0,Mozilla Public License 2.0
+github.com/gorilla/mux,v1.7.4,New BSD
+github.com/jinzhu/gorm,v1.9.16,MIT
+github.com/jinzhu/inflection,v1.0.0,MIT
+github.com/joho/godotenv,v1.3.0,MIT
+github.com/streadway/amqp,v1.0.0,Simplified BSD
