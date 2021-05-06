@@ -51,7 +51,7 @@ do
     if [ "$i" == "$a" ]; then
         payload=$( jq -n \
                   --arg ln "$i" \
-                  --arg ad "2021-04-29T05:39:14.919Z" \
+                  --arg ad "$(date --utc +%FT%T.%3NZ)" \
                   --arg st "allowed" \
                   '{license_name: $ln, analysis_date: $ad, status: $st}' )
         all=$(echo $all | jq ".+=[$payload]")
@@ -66,7 +66,7 @@ do
     if [ "$i" == "$b" ]; then
         payload=$( jq -n \
                   --arg ln "$i" \
-                  --arg ad "2021-04-29T05:39:14.919Z" \
+                  --arg ad "$(date --utc +%FT%T.%3NZ)" \
                   --arg st "denied" \
                   '{license_name: $ln, analysis_date: $ad, status: $st}' )
         all=$(echo $all | jq ".+=[$payload]")
