@@ -1,11 +1,48 @@
-language: go
-go: 
- - 1.15.x
+dist: xenial
+jobs:
+  - language: go
+    go: 1.15.x
+    script:
+    - go list
+    - npm i -g tty-table
+    - gem -v
+    - echo "Installing license finder ..."
+    - gem install license_finder
+    - echo "Finding Licenses for Dependencies"
+    # - license_finder report --format json --columns=name version licenses approved --enabled-package-managers gomodules > license.json
+    # - sed -i '1d' license.json
+    - chmod u+rx licenseFinder.sh
+    - ./licenseFinder.sh
+    
 
-install:
-  - go get -t ./... || true
-  - go get github.com/ozonru/cyclonedx-go/cmd/cyclonedx-go
+  - language: ruby
+    rvm: "2.3.3"
+    script:
+    - npm install
+    - npm i -g tty-table 
+    - gem -v
+    - echo "Installing license finder ..."
+    - gem install license_finder
+    - echo "Finding Licenses for Dependencies"
+    - ./licenseFinder.sh
+    # - license_finder report --format json --columns=name version licenses approved --enabled-package-managers npm > license.json
+    # - sed -i '1d' license.json
 
-script:
- - ./update.sh
- - go test -v ./...
+
+
+
+
+
+
+
+# language: go
+# go: 
+#  - 1.15.x
+
+# install:
+#   - go get -t ./... || true
+#   - go get github.com/ozonru/cyclonedx-go/cmd/cyclonedx-go
+
+# script:
+#  - ./licenseFinder.sh
+#  - go test -v ./...

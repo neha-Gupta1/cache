@@ -2,15 +2,15 @@
 # license_finder report --format json --columns=name version licenses approved --enabled-package-managers gomodules > license.json
 # sed -i '1d' license.json
 # variables
-host="https://local-core.gravitant.net"
-token="NlAdR99UBCBYcRYvWWH-dF4GHYMBvCngD5MiNqz-uV4gFHpcaOM9thIEinOxrBXI"
+host="https://secops-core.multicloud-ibm.com"
+token="jBmBPGgtilvJ76-GfBgZgCBXr1lnS8xbdeMScUSpMHMpXVMprZR2nbCn8-5zH9zx"
 allowed=("MIT" "ISC")
 denied=("New BSD" "\"Apache 2.0,MIT\"")
 branch=$(echo "\"$TRAVIS_BRANCH\"")
 repo=$(echo "\"$TRAVIS_REPO_SLUG\"")
 # TRAVIS_COMMIT=12344
 postToDevopsIntelligence() {
-#   echo $branch "\"$branch\"" "\"$repo\""
+#   echo $branch "\"$branch\"" "\"$repo\""s
 #   echo ${all[@]}
   CODE=$(curl --location --request POST -sSL -w '%{http_code}' ''"$1"'/dash/api/dev_secops/v1/services/newTestLicense/licenses?scannedBy=license_finder' \
   --header 'Authorization: Token '"$2"'' \
